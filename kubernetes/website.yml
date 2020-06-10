@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-website
+spec:
+  selector:
+    matchLabels:
+      app: app-website
+  template:
+    metadata:
+      labels:
+        app: app-website
+    spec:
+      containers:
+        - name: website
+          image: yoerivd/website
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '500m'
+            requests:
+              memory: '1Mi'
+              cpu: '1m'
+          ports:
+            - containerPort: 80
+          env:
+            - name: Service
+              value: 'http://app-service/machine'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-website
+spec:
+  type: LoadBalancer
+  selector:
+    app: app-website
+  ports:
+    - port: 5001
+      targetPort: 80
